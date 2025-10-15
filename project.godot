@@ -58,6 +58,8 @@ dash={
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/compress_with_gpu=false
+textures/vram_compression/cache_gpu_compressor=false
 textures/webp_compression/compression_method=0
 textures/webp_compression/lossless_compression_factor=0.0
 textures/default_filters/use_nearest_mipmap_filter=true
