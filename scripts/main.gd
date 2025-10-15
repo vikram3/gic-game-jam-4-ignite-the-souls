@@ -5,6 +5,7 @@ extends Control
 @onready var title_label = $TitleLabel
 @onready var bg_particles = $BGParticles
 
+
 var title_time := 0.0
 
 func _ready():

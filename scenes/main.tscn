@@ -1,10 +1,23 @@
-[gd_scene load_steps=5 format=3 uid="uid://ccle6h3on4phu"]
+[gd_scene load_steps=8 format=3 uid="uid://ccle6h3on4phu"]
 
 [ext_resource type="Script" uid="uid://svd3bovtngk6" path="res://scripts/main.gd" id="1_o5qli"]
 [ext_resource type="Texture2D" uid="uid://quu7qnsptje7" path="res://assets/Blue Star.png" id="2_0wfyh"]
+[ext_resource type="Texture2D" uid="uid://dj5ljxcgrdpe6" path="res://assets/back.png" id="2_jyhfs"]
 [ext_resource type="Shader" uid="uid://sa8aal62ajfd" path="res://scenes/Title.gdshader" id="3_sugp2"]
+[ext_resource type="Texture2D" uid="uid://clnfs41mwltnm" path="res://assets/sSoul.png" id="5_tbgi4"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jyhfs"]
+shader = ExtResource("3_sugp2")
+shader_parameter/flame_speed = 2.0
+shader_parameter/flame_intensity = 1.5
+shader_parameter/distortion_strength = 0.05
+shader_parameter/fire_color_hot = Color(1, 0.9, 0.3, 1)
+shader_parameter/fire_color_mid = Color(1, 0.5, 0.1, 1)
+shader_parameter/fire_color_cool = Color(0.8, 0.2, 0.05, 1)
+shader_parameter/glow_strength = 2.0
+shader_parameter/ember_count = 30.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tbgi4"]
 shader = ExtResource("3_sugp2")
 shader_parameter/flame_speed = 2.0
 shader_parameter/flame_intensity = 1.5
@@ -24,14 +37,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_o5qli")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="ColorRect" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.036184546, 0.047914952, 0.10147043, 1)
+texture = ExtResource("2_jyhfs")
+expand_mode = 3
 
 [node name="BGParticles" type="CPUParticles2D" parent="."]
 position = Vector2(283.865, 174.915)
@@ -54,9 +68,21 @@ grow_vertical = 2
 [node name="Ignite The Soul" type="Label" parent="TitleLabel"]
 material = SubResource("ShaderMaterial_jyhfs")
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Ignite The Soul"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="SSoul" type="Sprite2D" parent="TitleLabel/Ignite The Soul"]
+position = Vector2(188, 23.5)
+texture = ExtResource("5_tbgi4")
+hframes = 4
+
+[node name="SSoul2" type="Sprite2D" parent="TitleLabel/Ignite The Soul"]
+material = SubResource("ShaderMaterial_tbgi4")
+position = Vector2(18, 18.5)
+texture = ExtResource("5_tbgi4")
+hframes = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvygd8xtodi1s"
-path="res://.godot/imported/spr_smoke_strip24.png-23e781f3ad65988d31191d1099951fb8.ctex"
+uid="uid://dj5ljxcgrdpe6"
+path="res://.godot/imported/back.png-515119acda62477b1fef7f62900af1e0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/spr_smoke_strip24.png"
-dest_files=["res://.godot/imported/spr_smoke_strip24.png-23e781f3ad65988d31191d1099951fb8.ctex"]
+source_file="res://assets/back.png"
+dest_files=["res://.godot/imported/back.png-515119acda62477b1fef7f62900af1e0.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -37,4 +37,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

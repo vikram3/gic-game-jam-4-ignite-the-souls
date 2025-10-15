@@ -7,7 +7,7 @@ extends CanvasLayer
 @onready var pause_menu = $PauseMenu
 @onready var resume_button = $PauseMenu/VBoxContainer/ResumeButton
 @onready var menu_button = $PauseMenu/VBoxContainer/MenuButton
-@onready var bg_particles = $BGParticles
+@onready var bg_particles: CPUParticles2D = $CanvasLayer/BGParticles
 var combo_tween: Tween
 
 func _ready():

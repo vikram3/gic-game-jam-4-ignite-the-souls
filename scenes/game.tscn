@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bft4md8srsqwu"]
+[gd_scene load_steps=11 format=3 uid="uid://bft4md8srsqwu"]
 
 [ext_resource type="Script" uid="uid://bn2t6wvoahrw2" path="res://scripts/game_manager.gd" id="1_p57ef"]
 [ext_resource type="Script" uid="uid://bhndvyd45i6hu" path="res://scenes/audio_manager.gd" id="2_u5sy4"]
@@ -8,10 +8,18 @@
 [ext_resource type="AudioStream" uid="uid://cm7wx50nr0tmj" path="res://assets/forest_river_spirits.ogg" id="6_kvpfn"]
 [ext_resource type="Texture2D" uid="uid://clnfs41mwltnm" path="res://assets/sSoul.png" id="6_u5sy4"]
 [ext_resource type="Texture2D" uid="uid://quu7qnsptje7" path="res://assets/Blue Star.png" id="8_gee14"]
+[ext_resource type="PackedScene" uid="uid://c8khn22o6q0bd" path="res://bg.tscn" id="9_0tnpc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_tbgi4"]
 
 [node name="Game" type="Node2D"]
+
+[node name="Control" parent="." instance=ExtResource("9_0tnpc")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [node name="player_soul" parent="." instance=ExtResource("3_gee14")]
 z_index = 4
@@ -21,6 +29,8 @@ position = Vector2(284, 40)
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_p57ef")
 world_bounds = Rect2(300, -100, 500, 500)
+waypoint_threshold = 10
+magnetism_range = 20.0
 
 [node name="AudioManager" type="Node" parent="GameManager"]
 script = ExtResource("2_u5sy4")
@@ -35,10 +45,6 @@ min_zoom = Vector2(0.5, 0.5)
 
 [node name="UI" type="CanvasLayer" parent="."]
 script = ExtResource("5_vtaks")
-
-[node name="BGParticles" type="CPUParticles2D" parent="UI"]
-position = Vector2(283.865, 174.915)
-texture = ExtResource("8_gee14")
 
 [node name="MarginContainer" type="MarginContainer" parent="UI"]
 offset_right = 64.0
@@ -121,6 +127,14 @@ text = "Resume"
 [node name="MenuButton" type="Button" parent="UI/PauseMenu/VBoxContainer"]
 layout_mode = 2
 text = "Menu"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="UI"]
+layer = 0
+follow_viewport_enabled = true
+
+[node name="BGParticles" type="CPUParticles2D" parent="UI/CanvasLayer"]
+position = Vector2(283.865, 174.915)
+texture = ExtResource("8_gee14")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_kvpfn")

@@ -41,7 +41,10 @@ energy = 1.8
 texture = ExtResource("3_bvpap")
 
 [node name="GlowEffect" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 1
 texture = ExtResource("3_bvpap")
+one_shot = true
 
 [node name="dash" type="CPUParticles2D" parent="."]
 emitting = false
