@@ -25,7 +25,7 @@ func setup_bg_particles():
 		bg_particles.amount = 50
 		bg_particles.lifetime = 3.0
 		bg_particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-		bg_particles.emission_rect_extents = Vector2(150, 100)
+		bg_particles.emission_rect_extents = Vector2(300, 200)
 		bg_particles.direction = Vector2(0, -1)
 		bg_particles.spread = 30
 		bg_particles.gravity = Vector2(0, -20)

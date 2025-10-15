@@ -12,6 +12,12 @@ extends Area2D
 @export var chain_reaction_range := 200.0
 @export var chain_reaction_delay := 0.2
 
+# Soul type properties
+@export_enum("Life", "Mana", "Spirit", "Dark", "Ancient", "Chaos") var soul_type := 0
+@export var custom_color : Color = Color.TRANSPARENT
+@export var randomize_type_on_spawn := true  # New: Enable random soul types
+@export var spawn_weights : Array[float] = [1.0, 1.0, 1.0, 1.0, 0.3, 0.1]  # Weights for each soul type
+
 var time := 0.0
 var initial_y := 0.0
 var difficulty := 1.0
@@ -25,13 +31,92 @@ var ignited_by_chain := false
 var fire_shader_material: ShaderMaterial
 var burn_tween: Tween
 
+# Soul type definitions
+var soul_types = {
+	"Life": {
+		"color": Color.from_hsv(0.3, 0.8, 1.0),  # Green
+		"light_color": Color(0.3, 1.0, 0.4, 1.0),
+		"particle_color": Color(0.4, 1.0, 0.5, 0.8),
+		"fire_color_hot": Color(0.8, 1.0, 0.3, 1.0),
+		"fire_color_mid": Color(0.4, 0.9, 0.2, 1.0),
+		"fire_color_cool": Color(0.2, 0.6, 0.1, 1.0),
+		"glow_multiplier": 1.2
+	},
+	"Mana": {
+		"color": Color.from_hsv(0.6, 0.8, 1.0),  # Blue
+		"light_color": Color(0.3, 0.5, 1.0, 1.0),
+		"particle_color": Color(0.4, 0.6, 1.0, 0.8),
+		"fire_color_hot": Color(0.3, 0.8, 1.0, 1.0),
+		"fire_color_mid": Color(0.1, 0.5, 0.9, 1.0),
+		"fire_color_cool": Color(0.05, 0.3, 0.7, 1.0),
+		"glow_multiplier": 1.5
+	},
+	"Spirit": {
+		"color": Color.from_hsv(0.8, 0.7, 1.0),  # Purple
+		"light_color": Color(0.7, 0.3, 1.0, 1.0),
+		"particle_color": Color(0.8, 0.4, 1.0, 0.8),
+		"fire_color_hot": Color(0.9, 0.4, 1.0, 1.0),
+		"fire_color_mid": Color(0.7, 0.2, 0.8, 1.0),
+		"fire_color_cool": Color(0.5, 0.1, 0.6, 1.0),
+		"glow_multiplier": 1.8
+	},
+	"Dark": {
+		"color": Color.from_hsv(0.15, 0.9, 0.8),  # Dark Orange/Brown
+		"light_color": Color(0.8, 0.3, 0.1, 1.0),
+		"particle_color": Color(0.9, 0.4, 0.2, 0.8),
+		"fire_color_hot": Color(1.0, 0.5, 0.1, 1.0),
+		"fire_color_mid": Color(0.8, 0.3, 0.05, 1.0),
+		"fire_color_cool": Color(0.6, 0.2, 0.0, 1.0),
+		"glow_multiplier": 0.8
+	},
+	"Ancient": {
+		"color": Color.from_hsv(0.1, 0.6, 0.9),  # Gold
+		"light_color": Color(1.0, 0.8, 0.3, 1.0),
+		"particle_color": Color(1.0, 0.9, 0.4, 0.8),
+		"fire_color_hot": Color(1.0, 1.0, 0.5, 1.0),
+		"fire_color_mid": Color(1.0, 0.7, 0.2, 1.0),
+		"fire_color_cool": Color(0.8, 0.5, 0.1, 1.0),
+		"glow_multiplier": 2.0
+	},
+	"Chaos": {
+		"color": Color.from_hsv(0.0, 0.9, 1.0),  # Will change over time in _process
+		"light_color": Color(1.0, 0.5, 0.5, 1.0),
+		"particle_color": Color(1.0, 0.6, 0.6, 0.8),
+		"fire_color_hot": Color(1.0, 0.3, 0.3, 1.0),
+		"fire_color_mid": Color(0.8, 0.1, 0.8, 1.0),
+		"fire_color_cool": Color(0.3, 0.1, 1.0, 1.0),
+		"glow_multiplier": 1.3
+	}
+}
+
 func _ready():
 	connect("body_entered", _on_body_entered)
 	initial_y = position.y
 	setup_sprite_animation()
 	setup_visual_effects()
 	setup_fire_shader()
+	
+	# Randomize soul type if enabled
+	if randomize_type_on_spawn:
+		randomize_soul_type()
+	
+	apply_soul_type()
 	randomize_appearance()
+
+func randomize_soul_type():
+	# Use weighted random selection
+	var total_weight = 0.0
+	for i in range(spawn_weights.size()):
+		total_weight += spawn_weights[i]
+	
+	var random_value = randf() * total_weight
+	var cumulative_weight = 0.0
+	
+	for i in range(spawn_weights.size()):
+		cumulative_weight += spawn_weights[i]
+		if random_value <= cumulative_weight:
+			soul_type = i
+			break
 
 func setup_sprite_animation():
 	if sprite and sprite is Sprite2D:
@@ -67,16 +152,79 @@ func setup_fire_shader():
 	if sprite:
 		sprite.material = fire_shader_material
 
+func apply_soul_type():
+	var type_keys = soul_types.keys()
+	if soul_type >= type_keys.size():
+		soul_type = 0
+	
+	var current_type = type_keys[soul_type]
+	var soul_data = soul_types[current_type]
+	
+	# Apply custom color if set
+	if custom_color != Color.TRANSPARENT:
+		modulate = custom_color
+		if light:
+			light.color = custom_color
+		if particles:
+			particles.color = custom_color
+	else:
+		# Apply type-based colors
+		modulate = soul_data.color
+		if light:
+			light.color = soul_data.light_color
+			light.energy *= soul_data.glow_multiplier
+		if particles:
+			particles.color = soul_data.particle_color
+	
+	# Update fire shader colors if available
+	if fire_shader_material:
+		fire_shader_material.set_shader_parameter("fire_color_hot", soul_data.fire_color_hot)
+		fire_shader_material.set_shader_parameter("fire_color_mid", soul_data.fire_color_mid)
+		fire_shader_material.set_shader_parameter("fire_color_cool", soul_data.fire_color_cool)
+
 func randomize_appearance():
-	var hue_shift = randf_range(-0.1, 0.1)
-	modulate = Color.from_hsv(0.6 + hue_shift, 0.7, 1.0)
+	# Apply slight variations based on type
+	var type_keys = soul_types.keys()
+	var current_type = type_keys[soul_type]
+	var soul_data = soul_types[current_type]
+	
+	var hue_shift = randf_range(-0.05, 0.05)
+	var sat_shift = randf_range(-0.1, 0.1)
+	var val_shift = randf_range(-0.1, 0.1)
+	
+	if custom_color == Color.TRANSPARENT:
+		var base_color = soul_data.color
+		var shifted_color = Color.from_hsv(
+			base_color.h + hue_shift,
+			clamp(base_color.s + sat_shift, 0.3, 1.0),
+			clamp(base_color.v + val_shift, 0.6, 1.0)
+		)
+		modulate = shifted_color
+	
 	time = randf_range(0, TAU)
 	
 	var scale_var = randf_range(0.9, 1.1)
 	scale = Vector2(scale_var, scale_var)
+	
+	# Randomize animation speed slightly
+	animation_speed *= randf_range(0.8, 1.2)
+	
+	# Randomize float properties for more natural movement
+	float_amplitude *= randf_range(0.8, 1.2)
+	float_speed *= randf_range(0.8, 1.2)
 
 func _process(delta):
 	time += delta
+	
+	# Handle Chaos soul color changing
+	if soul_type == 5:  # Chaos type
+		var chaos_color = Color.from_hsv(time * 0.5, 0.9, 1.0)
+		modulate = chaos_color
+		if light:
+			light.color = chaos_color
+		if particles:
+			particles.color = chaos_color.lightened(0.2)
+	
 	animate_sprite(delta)
 	
 	var float_offset = sin(time * float_speed) * float_amplitude
@@ -127,9 +275,37 @@ func check_player_proximity():
 
 func _on_body_entered(body):
 	if body.is_in_group("player"):
-		body.restore_life()
+		# Different effects based on soul type
+		match soul_type:
+			0: # Life - restore health
+				body.restore_life()
+			1: # Mana - restore mana or special ability
+				if body.has_method("restore_mana"):
+					body.restore_mana()
+				else:
+					body.restore_life()
+			2: # Spirit - temporary buff
+				if body.has_method("apply_spirit_buff"):
+					body.apply_spirit_buff()
+				else:
+					body.restore_life()
+			3: # Dark - different effect
+				if body.has_method("apply_dark_effect"):
+					body.apply_dark_effect()
+				else:
+					body.restore_life()
+			4: # Ancient - special effect
+				if body.has_method("apply_ancient_power"):
+					body.apply_ancient_power()
+				else:
+					body.restore_life()
+			5: # Chaos - random effect
+				if body.has_method("apply_chaos_effect"):
+					body.apply_chaos_effect()
+				else:
+					body.restore_life()
+		
 		start_burn_effect()
-		# Don't queue_free immediately - wait for burn effect to complete
 
 func start_burn_effect():
 	if is_being_collected:
@@ -158,10 +334,13 @@ func apply_fire_effect():
 	# Increase fire intensity gradually
 	burn_tween.tween_method(_update_fire_intensity, 0.0, 3.0, 0.8)
 	
-	# Add color shift to fiery colors
+	# Add color shift to fiery colors based on soul type
 	if sprite:
-		burn_tween.tween_property(sprite, "modulate", 
-			Color(1.0, 0.6, 0.3, 1.0), 0.6)
+		var type_keys = soul_types.keys()
+		var current_type = type_keys[soul_type]
+		var soul_data = soul_types[current_type]
+		var target_color = soul_data.fire_color_mid.lightened(0.3)
+		burn_tween.tween_property(sprite, "modulate", target_color, 0.6)
 	
 	# Increase light intensity
 	if light:
@@ -188,7 +367,6 @@ func create_burn_expansion():
 		particles.spread = 180
 		particles.direction = Vector2(0, -1)
 		particles.gravity = Vector2(0, -50)
-		particles.color = Color(1.0, 0.5, 0.2, 0.8)
 		particles.emitting = true
 	
 	# Scale and distort the sprite
@@ -277,3 +455,18 @@ func create_shockwave():
 func set_difficulty(multiplier: float):
 	difficulty = multiplier
 	animation_speed = 8.0 + (multiplier - 1.0) * 3.0
+
+# Public method to set soul type programmatically
+func set_soul_type(type: int):
+	soul_type = type
+	apply_soul_type()
+
+# Public method to set custom color
+func set_custom_color(color: Color):
+	custom_color = color
+	apply_soul_type()
+
+# Public method to force random soul type
+func randomize_soul_type_manual():
+	randomize_soul_type()
+	apply_soul_type()
