@@ -14,23 +14,17 @@
 
 [node name="Game" type="Node2D"]
 
-[node name="Control" parent="." instance=ExtResource("9_0tnpc")]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-
 [node name="player_soul" parent="." instance=ExtResource("3_gee14")]
 z_index = 4
 z_as_relative = false
-position = Vector2(284, 40)
+position = Vector2(432, 221)
+soul_life = 20.0
+life_restore = 2.0
 
 [node name="GameManager" type="Node" parent="."]
 script = ExtResource("1_p57ef")
 world_bounds = Rect2(300, -100, 500, 500)
 waypoint_threshold = 10
-magnetism_range = 20.0
 
 [node name="AudioManager" type="Node" parent="GameManager"]
 script = ExtResource("2_u5sy4")
@@ -65,6 +59,8 @@ texture_progress = ExtResource("6_u5sy4")
 layout_mode = 2
 text = "SCORE"
 label_settings = SubResource("LabelSettings_tbgi4")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Message" type="Label" parent="UI"]
 anchors_preset = 8
@@ -73,9 +69,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -33.5
-offset_top = -11.5
+offset_top = 94.0
 offset_right = 33.5
-offset_bottom = 11.5
+offset_bottom = 117.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Message"
@@ -133,9 +129,12 @@ layer = 0
 follow_viewport_enabled = true
 
 [node name="BGParticles" type="CPUParticles2D" parent="UI/CanvasLayer"]
-position = Vector2(283.865, 174.915)
+position = Vector2(431, 222)
 texture = ExtResource("8_gee14")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_kvpfn")
 autoplay = true
+
+[node name="Control" parent="." instance=ExtResource("9_0tnpc")]
+layer = -2
